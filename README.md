@@ -6,4 +6,11 @@ Based on JuNest, this fully-featured script provides you with some of the most b
 > Powerful package manager: `pacman`
 > User switching with fully-patched `sudo`
 > Install even more variety packages with `makepkg`
+> Even more packages with an AUR helper, `paru` in place
 
+# Installation
+```
+cd ~ 
+curl -LO https://raw.githubusercontent.com/ambientxd/RootlessArch/main/installer.sh
+bash installer.sh
+```
