@@ -79,7 +79,7 @@ SIGNPKG=''
 SPLITPKG=0
 SOURCEONLY=0
 VERIFYSOURCE=0
-MAKEPKG_CONF="$HOME/.junest/etc/makepkg.conf"
+MAKEPKG_CONF="$ROOTHOMEDIR/.junest/etc/makepkg.conf"
 
 if [[ -n $SOURCE_DATE_EPOCH ]]; then
 	REPRODUCIBLE=1
