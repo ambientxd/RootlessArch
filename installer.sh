@@ -90,7 +90,7 @@ function firstStartup(){
     sudovm="$HOME/.local/share/junest/bin/junest proot --fakeroot"
     pacmanj="$sudovm pacman"
     $pacmanj -Syu --ignore base-devel --noconfirm >/dev/null
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db $PacmanCustomPackages >/dev/null
+    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils $PacmanCustomPackages >/dev/null
     $pacmanj -R yay --noconfirm &>/dev/null #Broken package
 
     # Install Paru (AUR Helper)
