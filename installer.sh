@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# RootlessArch
+# Copyright (C) 2022 ambientxd
+# This program comes with ABSOLUTELY NO WARRANTY
+# This is free software, and you are welcome to redistribute it
+# under certain conditions
+
 # Configuration for custom usage.
 PacmanCustomPackages="" # Those packages gets pre-installed in the installation process.
 filePath="$(pwd)/$0" # Installer's file path
