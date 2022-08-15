@@ -6,9 +6,11 @@
 # This is free software, and you are welcome to redistribute it
 # under certain conditions
 
+
 # Configuration for custom usage.
 PacmanCustomPackages="" # Those packages gets pre-installed in the installation process.
 filePath="$(pwd)/$0" # Installer's file path
+shellConfig="$HOME/.bashrc"
 
 #Files
 sudoPatch="
@@ -71,8 +73,10 @@ function patchBugs(){
     cd $HOME/tmp/RootlessArch/patches
     echo -e $sudoPatch > sudo
     cp makepkg sudo $HOME/.junest/usr/bin
-    echo "chmod +x $HOME/.junest/usr/bin/makepkg" >> $HOME/.bashrc
-    echo "chmod +x $HOME/.junest/usr/bin/sudo" >> $HOME/.bashrc
+    echo "chmod +x $HOME/.junest/usr/bin/makepkg" >> $shellConfig
+    echo "chmod +x $HOME/.junest/usr/bin/sudo" >> $shellConfig
+    echo "ROOTHOMEDIR=$HOME" >> $shellConfig
+    echo "export ROOTHOMEDIR" >> $shellConfig
 
     # Pacman
     cp mirrorlist $HOME/.junest/etc/pacman.d/mirrorlist
