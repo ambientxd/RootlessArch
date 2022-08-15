@@ -61,7 +61,7 @@ exit 0
 
 function startArchLinux(){
     rm -rf $HOME/tmp/*
-    bash $HOME/.local/share/junest/bin/junest proot --fakeroot
+    bash $HOME/.local/share/junest/bin/junest proot --fakeroot export ROOTHOMEDIR=$HOME \&\& \$SHELL
 }
 
 function patchBugs(){
@@ -75,9 +75,6 @@ function patchBugs(){
     cp makepkg sudo $HOME/.junest/usr/bin
     echo "chmod +x $HOME/.junest/usr/bin/makepkg" >> $shellConfig
     echo "chmod +x $HOME/.junest/usr/bin/sudo" >> $shellConfig
-    echo "ROOTHOMEDIR=$HOME" >> $shellConfig
-    echo "export ROOTHOMEDIR" >> $shellConfig
-
     # Pacman
     cp mirrorlist $HOME/.junest/etc/pacman.d/mirrorlist
     echo "[options]" >> $HOME/.junest/etc/pacman.conf
@@ -91,9 +88,10 @@ function patchBugs(){
 }
 function firstStartup(){
     # Install required packages.
-    pacmanj="$HOME/.local/share/junest/bin/junest proot --fakeroot pacman"
+    sudovm="$HOME/.local/share/junest/bin/junest proot --fakeroot"
+    pacmanj="$sudovm pacman"
     $pacmanj -Syu --ignore base-devel --noconfirm >/dev/null
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd $PacmanCustomPackages >/dev/null
+    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db $PacmanCustomPackages >/dev/null
     $pacmanj -R yay --noconfirm &>/dev/null #Broken package
 
     # Install Paru (AUR Helper)
