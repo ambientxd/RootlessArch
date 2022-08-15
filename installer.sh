@@ -69,12 +69,11 @@ function patchBugs(){
     git clone https://github.com/ambientxd/RootlessArch >/dev/null
 
 
-    # Makepkg and Sudo
+    # Makepkg, Fakechroot and Fakeroot
     cd $HOME/tmp/RootlessArch/patches
-    echo -e $sudoPatch > sudo
-    cp makepkg sudo $HOME/.junest/usr/bin
-    echo "chmod +x $HOME/.junest/usr/bin/makepkg" >> $shellConfig
-    echo "chmod +x $HOME/.junest/usr/bin/sudo" >> $shellConfig
+    cp makepkg fakechroot fakeroot $HOME/.junest/usr/bin
+
+
     # Pacman
     cp mirrorlist $HOME/.junest/etc/pacman.d/mirrorlist
     echo "[options]" >> $HOME/.junest/etc/pacman.conf
