@@ -214,7 +214,7 @@ echo -e "
    ▟██████▀▀▀              ▀▀██████▙
   ▟███▀▘                       ▝▀███▙
  ▟▛▀                               ▀▜▙
-   RootlessArch Updater [EXPERIMENTAL]
+          RootlessArch Updater
 "
 
 
