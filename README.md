@@ -1,5 +1,5 @@
 # RootlessArch
-Install Arch Linux on your lovely linux machines.
+Install Rooted Arch Linux on your lovely linux machines without needing root permissions.
 
 # Features
 - Bleeding edge Arch linux's pacman package manager.
