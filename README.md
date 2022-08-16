@@ -7,3 +7,5 @@ cd ~
 curl -LO https://raw.githubusercontent.com/ambientxd/RootlessArch/main/installer.sh
 bash installer.sh
 ```
+
+also please report bugs <a href="https://github.com/ambientxd/RootlessArch/issues">here</a>
