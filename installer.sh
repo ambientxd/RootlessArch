@@ -12,39 +12,6 @@ PacmanCustomPackages="" # Those packages gets pre-installed in the installation 
 filePath="$(pwd)/$0" # Installer's file path
 shellConfig="$HOME/.bashrc"
 
-#Files
-sudoPatch="
-#!/bin/bash\n
-for opt in \"\$@\"\n
-do\n
-    case \"\$1\" in\n
-        --) shift ; break ;;\n
-        -*) shift ;;\n
-        *) break ;;\n
-    esac\n
-done\n
-\n
-export FAKEROOTDONTTRYCHOWN=true\n
-if [[ -n \"\${@}\" ]]\n
-then\n
-  if [[ \$FAKECHROOT == true ]]\n
-  then\n
-      fakechrootcmd=\"\"\n
-  else\n
-      fakechrootcmd=\"fakechroot --lib $HOME/.junest/lib/libfakeroot/fakechroot/libfakechroot.so\"\n
-  fi\n
-\n
-  if [[ -n \$FAKED_MODE ]]\n
-  then\n
-      fakerootcmd=\"\"\n
-  else\n
-      fakerootcmd=\"/usr/bin/fakeroot --lib $HOME/.junest/lib/libfakeroot/libfakeroot.so\"\n
-  fi\n
-\n
-  \$fakechrootcmd \$fakerootcmd \"\${@}\"\n
-fi
-"
-
 
 function printUsage(){
 echo "$0 - A part of RootlessArch"
@@ -82,7 +49,6 @@ function patchBugs(){
     # Docker Systemctl Replacement
     curl -LO https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl3.py 
     cp systemctl3.py $HOME/.junest/bin/systemctl
-    cp systemctl3.py $HOME/.junest/usr/bin/systemctl
     
 }
 function firstStartup(){
@@ -90,7 +56,7 @@ function firstStartup(){
     sudovm="$HOME/.local/share/junest/bin/junest proot --fakeroot"
     pacmanj="$sudovm pacman"
     $pacmanj -Syu --ignore base-devel --noconfirm >/dev/null
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils $PacmanCustomPackages >/dev/null
+    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make $PacmanCustomPackages >/dev/null
     $pacmanj -R yay --noconfirm &>/dev/null #Broken package
 
     # Install Paru (AUR Helper)
@@ -169,7 +135,7 @@ echo -e "
    ▟██████▀▀▀              ▀▀██████▙
   ▟███▀▘                       ▝▀███▙
  ▟▛▀                               ▀▜▙
-         RootlessArch installer
+         RootlessArch Installer
 "
 
 
