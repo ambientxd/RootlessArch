@@ -1,6 +1,12 @@
 # RootlessArch
 Install Arch Linux on your lovely linux machines.
 
+# Features
+- Bleeding edge Arch linux's pacman package manager.
+- Preinstalled Paru (AUR Helper)
+- Fixed several MAKEPKG, FAKEROOT and FAKECHROOT bugs.
+- Everything is automatic.
+
 # Installation
 ```
 cd ~ 
