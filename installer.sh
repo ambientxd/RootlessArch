@@ -6,6 +6,8 @@
 # This is free software, and you are welcome to redistribute it
 # under certain conditions
 
+# This application is open source at https://github.com/ambientxd/RootlessArch
+
 # Configuration for custom usage.
 PacmanCustomPackages="" # Those packages gets pre-installed in the installation process.
 filePath="$(pwd)/$0" # Installer's file path
@@ -45,7 +47,11 @@ function patchBugs(){
 
     # Makepkg, Fakechroot and Fakeroot
     cd $HOME/tmp/RootlessArch/patches
+    chmod a+x makepkg
+    chmod a+x fakechroot
+    chmod a+x fakeroot
     cp makepkg fakechroot fakeroot $HOME/.junest/usr/bin
+
 
 
     # Pacman
@@ -66,7 +72,7 @@ function firstStartup(){
     paruj="$sudovm runuser -u $USER -- paru"
     pacmanj="$sudovm pacman"
     $pacmanj -Syu --ignore base-devel --noconfirm >> $logFile
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make >> $logFile
+    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make psmisc >> $logFile
     $pacmanj -R yay --noconfirm &>>$logFile #Broken package
 
     # Install Paru (AUR Helper)
@@ -89,7 +95,8 @@ function firstStartup(){
     $paruj -S --noconfirm gotty-bin $backupPackages $PacmanCustomPackages >> $logFile
 
 
-    #GoTTy
+    #GoTTy - pts not accessable bug
+    $sudovm chmod a+x -R /dev/pts
 }
 function installer(){
     ### Start of installation process
