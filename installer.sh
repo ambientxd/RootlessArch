@@ -93,10 +93,6 @@ function firstStartup(){
 
     # Install backed up packages (if there is)
     $paruj -S --noconfirm gotty-bin $backupPackages $PacmanCustomPackages >> $logFile
-
-
-    #GoTTy - pts not accessable bug
-    $sudovm chmod a+x -R /dev/pts
 }
 function installer(){
     ### Start of installation process
