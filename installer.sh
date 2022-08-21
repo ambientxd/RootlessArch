@@ -181,7 +181,7 @@ done
 printf "\b Finished\n"
 
 firstStartup 2>>$logFile & PID=$! >>$logFile
-echo -n "Installing essensital system packages...  "
+echo -n "Installing essential system packages...  "
 while kill -0 $PID 2>> $logFile; do 
     printf "\b${sp:i++%${#sp}:1}"
     sleep 0.5
