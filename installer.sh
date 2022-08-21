@@ -72,7 +72,7 @@ function firstStartup(){
     paruj="$sudovm runuser -u $USER -- paru"
     pacmanj="$sudovm pacman"
     $pacmanj -Syu --ignore base-devel --noconfirm >> $logFile
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make psmisc >> $logFile
+    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make psmisc psutils >> $logFile
     $pacmanj -R yay --noconfirm &>>$logFile #Broken package
 
     # Install Paru (AUR Helper)
@@ -91,8 +91,12 @@ function firstStartup(){
     cp completions/fish $HOME/.junest/usr/share/fish/vendor_completions.d/paru.fish
     cp completions/zsh $HOME/.junest/usr/share/zsh/site-functions/_paru
 
-    # Install backed up packages (if there is)
+    # Install backed up packages (if there is) & Gotty
     $paruj -S --noconfirm gotty-bin $backupPackages $PacmanCustomPackages >> $logFile
+
+    #Gotty communication
+    echo "for x in $(ls /dev/pts); do if [ \$x != "ptmx" ]; then echo "\$@" >> /dev/pts/\$x; fi; done" >> $HOME/.junest/usr/bin/gottycom
+    chmod a+x+w $HOME/.junest/usr/bin/gottycom
 }
 function installer(){
     ### Start of installation process
