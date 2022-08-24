@@ -72,7 +72,7 @@ function firstStartup(){
     paruj="$sudovm runuser -u $USER -- paru"
     pacmanj="$sudovm pacman"
     $pacmanj -Syu --ignore base-devel --noconfirm >> $logFile
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make psmisc psutils >> $logFile
+    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make psmisc psutils iputils >> $logFile
     $pacmanj -R yay --noconfirm &>>$logFile #Broken package
 
     # Install Paru (AUR Helper)
