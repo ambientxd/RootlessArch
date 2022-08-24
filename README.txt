@@ -31,7 +31,13 @@
 RootlessArch is a project which includes JuNest as it's main base, with many critical bugs being patches, and a variety of preinstalled-applications, making web development or and window-based programs works flawlessly.
 
 # How do I install this? 
-To Run, press the Run button in this Replit. It will automatically download the installer's latest version on this repository (https://github.com/ambientxd/RootlessArch) for more bug fixes updates and some mistakes.
+=> Downloading the file
+curl -LO https://raw.githubusercontent.com/ambientxd/RootlessArch/main/installer.sh
+bash installer.sh
+
+# After the installation finishes, just run
+bash installer.sh
+# everytime to login.
 
 ### How does it work? ####
 # 1. Installation Deployment
