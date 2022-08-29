@@ -37,7 +37,8 @@ exit 0
 
 function startArchLinux(){
     rm -rf $HOME/tmp/*
-    bash $HOME/.local/share/junest/bin/junest proot --fakeroot export ROOTHOMEDIR=$HOME \&\& \$SHELL
+    echo "Welcome to Arch Linux!"
+    bash $HOME/.local/share/junest/bin/junest proot --fakeroot su $USER
 }
 
 function patchBugs(){
@@ -50,6 +51,17 @@ function patchBugs(){
     chmod a+x makepkg
     chmod a+x fakechroot
     chmod a+x fakeroot
+
+    homediresc='\/home\/'"$USER"
+
+    sed -i "s/\$ROOTHOMEDIR/$homediresc/" makepkg
+    sed -i "s/\$ROOTHOMEDIR/$homediresc/" fakechroot
+    sed -i "s/\$ROOTHOMEDIR/$homediresc/" fakeroot
+
+    chmod 755 makepkg
+    chmod 755 fakechroot
+    chmod 755 fakeroot
+
     cp makepkg fakechroot fakeroot $HOME/.junest/usr/bin
 
 
@@ -58,10 +70,6 @@ function patchBugs(){
     cp mirrorlist $HOME/.junest/etc/pacman.d/mirrorlist
     echo "[options]" >> $HOME/.junest/etc/pacman.conf
     echo "RootDir     = $HOME/.junest" >> $HOME/.junest/etc/pacman.conf
-
-    # Docker Systemctl Replacement
-    curl -LO https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/master/files/docker/systemctl3.py 
-    cp systemctl3.py $HOME/.junest/bin/systemctl
     
 }
 function firstStartup(){
@@ -71,9 +79,9 @@ function firstStartup(){
     $sudovm useradd $USER
     paruj="$sudovm runuser -u $USER -- paru"
     pacmanj="$sudovm pacman"
-    $pacmanj -Syu --ignore base-devel --noconfirm >> $logFile
-    $pacmanj -S --noconfirm neofetch nano python tar gzip unzip which btop zstd man-db binutils make psmisc psutils iputils procps-ng >> $logFile
-    $pacmanj -R yay --noconfirm &>>$logFile #Broken package
+    $pacmanj -Syu --ignore base-devel --noconfirm
+    $pacmanj -S --noconfirm neofetch tar gzip unzip which btop zstd man-db binutils make psmisc psutils iputils procps-ng
+    $pacmanj -R yay --noconfirm #Broken package
 
     # Install Paru (AUR Helper)
     PARU_VERSION="1.11.1"
@@ -92,7 +100,7 @@ function firstStartup(){
     cp completions/zsh $HOME/.junest/usr/share/zsh/site-functions/_paru
 
     # Install backed up packages (if there is) & Gotty
-    $paruj -S --noconfirm gotty-bin $backupPackages $PacmanCustomPackages >> $logFile
+    $paruj -S --noconfirm gotty-bin $backupPackages $PacmanCustomPackages
 
     #Gotty communication
     echo "for x in $(ls /dev/pts); do if [ \$x != "ptmx" ]; then echo "\$@" >> /dev/pts/\$x; fi; done" >> $HOME/.junest/usr/bin/gottycom
@@ -163,7 +171,7 @@ echo -e "\e[32mWhile we're doing the hard work for you, you can have a break unt
 installer 2>>$logFile & PID=$! >>$logFile
 # While process is running...
 i=1
-sp="/-\|"
+sp="|/-\\"
 echo ""
 echo -n "Installing System...  "
 while kill -0 $PID 2>> $logFile; do 
@@ -183,7 +191,6 @@ printf "\b Finished\n"
 firstStartup 2>>$logFile & PID=$! >>$logFile
 echo -n "Installing essential system packages...  "
 while kill -0 $PID 2>> $logFile; do 
-    printf "\b${sp:i++%${#sp}:1}"
     sleep 0.5
 done
 printf "\b Finished\n"
