@@ -189,11 +189,11 @@ done
 printf "\b Finished\n"
 
 firstStartup 2>>$logFile & PID=$! >>$logFile
-echo -n "Installing essential system packages...  "
+echo -ne "Installing essential system packages...  \e[0m"
 while kill -0 $PID 2>> $logFile; do 
     sleep 0.5
 done
-printf "\b Finished\n"
+printf "\033[38;2;23;147;209m\b Finished\n"
 echo -n "Installation finished! Rerun the script to start Arch Linux!"
 }
 
@@ -201,82 +201,6 @@ echo -n "Installation finished! Rerun the script to start Arch Linux!"
 function backupPackages(){
     sudovm="$HOME/.local/share/junest/bin/junest proot --fakeroot"
     backupPackages=$($sudovm paru -Qq)
-}
-
-
-
-function upgradeSys(){
-clear
-echo -e "
-\033[38;2;23;147;209m        
-                   ▄
-                  ▟█▙
-                 ▟███▙
-                ▟█████▙
-               ▟███████▙
-              ▂▔▀▜██████▙
-             ▟██▅▂▝▜█████▙
-            ▟█████████████▙
-           ▟███████████████▙
-          ▟█████████████████▙
-         ▟███████████████████▙
-        ▟█████████▛▀▀▜████████▙
-       ▟████████▛      ▜███████▙
-      ▟█████████        ████████▙
-     ▟██████████        █████▆▅▄▃▂
-    ▟██████████▛        ▜█████████▙
-   ▟██████▀▀▀              ▀▀██████▙
-  ▟███▀▘                       ▝▀███▙
- ▟▛▀                               ▀▜▙
-          RootlessArch Updater
-"
-
-
-i=1
-sp="/-\|"
-
-echo -e "\e[32mWhile we're doing the hard work for you, you can have a break until the installation process finishes.\033[38;2;23;147;209m"
-
-backupPackages 2>>$logFile & PID=$! >>$logFile
-echo -n "Backing up packages...  "
-while kill -0 $PID 2>> $logFile; do 
-    printf "\b${sp:i++%${#sp}:1}"
-    sleep 0.5
-done
-printf "\b Finished\n"
-
-uninstall 2>>$logFile & PID=$! >>$logFile
-echo -n "Removing image...  "
-while kill -0 $PID 2>> $logFile; do 
-    printf "\b${sp:i++%${#sp}:1}"
-    sleep 0.5
-done
-printf "\b Finished\n"
-
-installer 2>>$logFile & PID=$! >>$logFile
-echo -n "Reinstalling image...  "
-while kill -0 $PID 2>> $logFile; do 
-    printf "\b${sp:i++%${#sp}:1}"
-    sleep 0.5
-done
-printf "\b Finished\n"
-
-patchBugs 2>>$logFile & PID=$! >>$logFile
-echo -n "Patching bugs...  "
-while kill -0 $PID 2>> $logFile; do 
-    printf "\b${sp:i++%${#sp}:1}"
-    sleep 0.5
-done
-printf "\b Finished\n"
-
-firstStartup 2>>$logFile & PID=$! >>$logFile
-echo -n "Reinstalling system packages and backup packages...  "
-while kill -0 $PID 2>> $logFile; do 
-    printf "\b${sp:i++%${#sp}:1}"
-    sleep 0.5
-done
-printf "\b Finished\n"
-echo -n "Upgrade finished! Rerun the script to start Arch Linux!"
 }
 
 # Handling Arguments
@@ -301,7 +225,7 @@ case $1 in
         ;;
     --upgrade)
         echo "" > $logFile
-        upgradeSys
+        echo "Still in progress, sorry :)"
         exit
         ;;
     -*)
