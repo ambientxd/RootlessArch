@@ -34,13 +34,6 @@ exit 0
 }
 
 
-
-function startArchLinux(){
-    rm -rf $HOME/tmp/*
-    echo "Welcome to Arch Linux!"
-    bash $HOME/.local/share/junest/bin/junest proot --fakeroot su $USER
-}
-
 function patchBugs(){
     cd $HOME/tmp
     git clone https://github.com/ambientxd/RootlessArch >> $logFile
@@ -232,6 +225,24 @@ case $1 in
         printUsage
         ;;
 esac
+
+function startArchLinux(){
+    rm -rf $HOME/tmp/*
+    echo "Welcome to Arch Linux!"
+
+    # Error checking
+    bash $HOME/.local/share/junest/bin/junest proot --fakeroot su $USER
+    exitCode=$!
+
+    if [ "$exitCode" != 0 ]; then
+        echo "An error has occured in the filesystem's prespective."
+        echo "The system will get reinstalled if you don't press CTRL+C to cancel in 30 seconds."
+        echo -ne "\nReinstalling system in "; i=30 && while [ $i -gt 0 ]; do sleep 1; i=$(($i-1)); printf "$i..."; done
+        uninstall
+        silentInstall
+    fi
+        
+}
 
 function checkInstaller(){
     if [ -f $HOME/.installstatus ]; then
