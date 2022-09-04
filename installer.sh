@@ -233,14 +233,6 @@ function startArchLinux(){
     # Error checking
     bash $HOME/.local/share/junest/bin/junest proot --fakeroot su $USER
     exitCode=$!
-
-    if [ "$exitCode" != 0 ]; then
-        echo "An error has occured in the filesystem's prespective."
-        echo "The system will get reinstalled if you don't press CTRL+C to cancel in 30 seconds."
-        echo -ne "\nReinstalling system in "; i=30 && while [ $i -gt 0 ]; do sleep 1; i=$(($i-1)); printf "$i..."; done
-        uninstall
-        silentInstall
-    fi
         
 }
 
