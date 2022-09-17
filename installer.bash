@@ -63,7 +63,8 @@ GottyAuthenticationPassword="password"
 # Gotty Custom Arguments
 GottyCustomArgs=""
 if [ "$runGottyOnStartup" == true ]; then
-    run=$(runGottyCommand)
+    runGottyCommand
+    run="$gotty_command"
 fi
 
 function printUsage(){
