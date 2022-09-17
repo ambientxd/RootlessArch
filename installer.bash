@@ -201,7 +201,6 @@ echo -e "
   ▟███▀▘                       ▝▀███▙
  ▟▛▀                               ▀▜▙
          RootlessArch Installer
-               BETA (WIP)
 "
 
 
