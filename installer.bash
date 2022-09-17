@@ -15,8 +15,56 @@ shellConfig="$HOME/.bashrc"
 logFile="$HOME/installer.log"
 
 # Random essential variables
-backupPackages=""
+#backupPackages=""
 
+# Startup settings
+runGottyOnStartup=false # Replaces variable $run.
+run="su $USER" # The command to run when started
+
+## Gotty
+gotty_command="gotty"
+function runGottyCommand(){
+    if [ "$GottyenableWritePermissions" == true ]; then
+        gotty_command="$gotty_command -w"
+    fi
+    
+    gotty_command="$gotty_command --timeout $GottyTimeout"
+
+    gotty_command="$gotty_command --width $GottyWidth"
+    gotty_command="$gotty_command --height $GottyHeight"
+
+    gotty_command="$gotty_command --address $GottyAddress"
+    gotty_command="$gotty_command --port $GottyPort"
+    gotty_command="$gotty_command --max-connection $GottyMaxConnection"
+
+    if [ "$GottyenableAuthentication" == true ]; then
+        gotty_command="$gotty_command --credential $GottyAuthenticationUsername:$GottyAuthenticationPassword"
+    fi
+    
+    gotty_command="$gotty_command $GottyCustomArgs"
+    gotty_command="$gotty_command $GottyCommand"
+}
+GottyenableWritePermissions=true
+GottyTimeout=0
+GottyCommand="bash"
+
+GottyWidth=0
+GottyHeight=0
+
+GottyAddress="0.0.0.0"
+GottyPort=8080
+GottyMaxConnection=0
+
+# Gotty Authentication
+GottyenableAuthentication=false
+GottyAuthenticationUsername="admin" # Works if $GottyenableAuthentication is enabled, spaces are permitted.
+GottyAuthenticationPassword="password"
+
+# Gotty Custom Arguments
+GottyCustomArgs=""
+if [ "$runGottyOnStartup" == true ]; then
+    run=$(runGottyCommand)
+fi
 
 function printUsage(){
 echo "$0 - A part of RootlessArch"
@@ -24,15 +72,12 @@ echo ""
 echo "Usage: $0 <arguments>"
 echo "Options:"
 echo "  $0 {-r    --reinstall}: Reinstall System"
-echo "  $0 {-d --selfdestruct}: Uninstall rootlessArch"
+echo "  $0 {-d --selfdestruct}: Uninstall RootlessArch"
 echo "  $0 {-v      --verbose}: Install System (Verbose Mode)"
-echo "  $0 {        --upgrade}: Upgrade System"
-echo "                          WARNING: Arch Linux's packages will be DESTROYED."
-echo "                          WARNING: Only packages using paru/pacman will be backed up"
-echo "                          WARNING: and files in \$HOME."
+echo "  $0 {-r   --runcommand}: Runs a command (Example: bash $0 --runcommand whoami)"
+echo ""
 exit 0
 }
-
 
 function patchBugs(){
     cd $HOME/tmp
@@ -50,20 +95,20 @@ function patchBugs(){
     sed -i "s/\$ROOTHOMEDIR/$homediresc/" makepkg
     sed -i "s/\$ROOTHOMEDIR/$homediresc/" fakechroot
     sed -i "s/\$ROOTHOMEDIR/$homediresc/" fakeroot
+    sed -i "s/\$ROOTHOMEDIR/$homediresc/" pacman.conf
 
     chmod 755 makepkg
     chmod 755 fakechroot
     chmod 755 fakeroot
 
     cp makepkg fakechroot fakeroot $HOME/.junest/usr/bin
-
-
-
-    # Pacman
-    cp mirrorlist $HOME/.junest/etc/pacman.d/mirrorlist
-    echo "[options]" >> $HOME/.junest/etc/pacman.conf
-    echo "RootDir     = $HOME/.junest" >> $HOME/.junest/etc/pacman.conf
+    mv pacman.conf $HOME/.junest/etc
     
+    # Testing BubbleWrap
+    bubblewrapTest=$($HOME/.local/share/junest/bin/junest ns --fakeroot whoami)
+    if [ "$bubblewrapTest" == "root" ]; then
+        touch $HOME/rlavars/bubbleWrapEnabled
+    fi
 }
 function firstStartup(){
     # Install required packages.
@@ -112,14 +157,14 @@ function installer(){
     bash $HOME/.local/share/junest/bin/junest setup -i junest-x86_64.tar.gz >>$logFile
 
     # Install required packages
-    echo "installation-finished-success" > $HOME/.installstatus
+    echo "installation-finished-success" > $HOME/rlavars/installstatus
     
 }
 function uninstall(){
     cd $HOME
     rm -rf .local/share/junest &>>$logFile
     rm -rf .junest &>>$logFile
-    rm -rf .installstatus &>>$logFile
+    rm -rf rlavars &>>$logFile
     rm -rf .bashrc &>>$logFile
     touch .bashrc
 }
@@ -156,6 +201,7 @@ echo -e "
   ▟███▀▘                       ▝▀███▙
  ▟▛▀                               ▀▜▙
          RootlessArch Installer
+               BETA (WIP)
 "
 
 
@@ -201,6 +247,7 @@ function backupPackages(){
 case $1 in
     -v|--verbose)
         echo "" > $logFile
+        mkdir $HOME/rlavars
         installer
         patchBugs
         firstStartup
@@ -230,18 +277,23 @@ function startArchLinux(){
     rm -rf $HOME/tmp/*
     echo "Welcome to Arch Linux!"
 
-    # Error checking
-    bash $HOME/.local/share/junest/bin/junest proot --fakeroot su $USER
+    # Selecting which configurations to use
+    startjunest="$HOME/.local/share/junest/bin/junest proot --fakeroot "
+    if [ -f $HOME/rlavars/bubbleWrapEnabled ]; then
+        startjunest="$HOME/.local/share/junest/bin/junest ns --fakeroot "
+    fi
+    $startjunest $run
     exitCode=$!
         
 }
 
 function checkInstaller(){
-    if [ -f $HOME/.installstatus ]; then
+    if [ -f $HOME/rlavars/installstatus ]; then
         clear
         
         startArchLinux
     else
+        mkdir $HOME/rlavars
         silentInstall
     fi
             
