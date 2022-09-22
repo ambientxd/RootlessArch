@@ -97,7 +97,7 @@ function patchBugs(){
     chmod a+x fakechroot
     chmod a+x fakeroot
 
-    homediresc="$variablesDirectory/linuxsystem"
+    homediresc="$variablesDirectory/linuximage"
 
     sed -i "s+\$ROOTHOMEDIR+$homediresc+" makepkg
     sed -i "s+\$ROOTHOMEDIR+$homediresc+" fakechroot
@@ -109,7 +109,7 @@ function patchBugs(){
     chmod 755 fakeroot
 
     cp makepkg fakechroot fakeroot $variablesDirectory/linuximage/usr/bin
-    mv pacman.conf $variablesDirectory/linuximage/etc
+    cp pacman.conf $variablesDirectory/linuximage/etc
     
     # Testing BubbleWrap
     bubblewrapTest=$($HOME/.local/share/junest/bin/junest ns --fakeroot whoami)
