@@ -145,8 +145,7 @@ function firstStartup(){
 
     # Gotty Quick Installation
     cd /tmp
-    GottyVersion="1.0.1"
-    curl -LO https://github.com/yudai/gotty/releases/download/v{GottyVersion}/gotty_linux_amd64.tar.gz
+    curl -LO https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
     $sudoj tar -xvf gotty_linux_amd64.tar.gz
     $sudoj cp gotty /usr/bin
 
