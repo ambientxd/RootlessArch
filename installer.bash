@@ -9,13 +9,17 @@
 # This application is open source at https://github.com/ambientxd/RootlessArch
 
 # Configuration for custom usage.
+variablesDirectory="$HOME/.rla"
 PacmanCustomPackages="" # Those packages gets pre-installed in the installation process.
 filePath="$(pwd)/$0" # Installer's file path
 shellConfig="$HOME/.bashrc"
-logFile="$HOME/installer.log"
+logFile="$variablesDirectory/logs/installer$RANDOM$RANDOM.log"
+
 
 # Random essential variables
 #backupPackages=""
+
+
 
 # Startup settings
 runGottyOnStartup=false # Replaces variable $run.
@@ -84,36 +88,37 @@ function patchBugs(){
     cd $HOME/tmp
     git clone https://github.com/ambientxd/RootlessArch >> $logFile
 
+    #GottyInstallation Config
+    GottyInstallationoConfig_pkgver=1.4.0
 
-    # Makepkg, Fakechroot and Fakeroot
+    # Makepkg, Fakechroot and Fakeroot, and Gotty Installation
     cd $HOME/tmp/RootlessArch/patches
     chmod a+x makepkg
     chmod a+x fakechroot
     chmod a+x fakeroot
 
-    homediresc='\/home\/'"$USER"
+    homediresc="$variablesDirectory/linuxsystem"
 
-    sed -i "s/\$ROOTHOMEDIR/$homediresc/" makepkg
-    sed -i "s/\$ROOTHOMEDIR/$homediresc/" fakechroot
-    sed -i "s/\$ROOTHOMEDIR/$homediresc/" fakeroot
-    sed -i "s/\$ROOTHOMEDIR/$homediresc/" pacman.conf
+    sed -i "s+\$ROOTHOMEDIR+$homediresc+" makepkg
+    sed -i "s+\$ROOTHOMEDIR+$homediresc+" fakechroot
+    sed -i "s+\$ROOTHOMEDIR+$homediresc+" fakeroot
+    sed -i "s+\$ROOTHOMEDIR+$homediresc+" pacman.conf
 
     chmod 755 makepkg
     chmod 755 fakechroot
     chmod 755 fakeroot
 
-    cp makepkg fakechroot fakeroot $HOME/.junest/usr/bin
-    mv pacman.conf $HOME/.junest/etc
+    cp makepkg fakechroot fakeroot $variablesDirectory/linuximage/usr/bin
+    mv pacman.conf $variablesDirectory/linuximage/etc
     
     # Testing BubbleWrap
     bubblewrapTest=$($HOME/.local/share/junest/bin/junest ns --fakeroot whoami)
     if [ "$bubblewrapTest" == "root" ]; then
-        touch $HOME/rlavars/bubbleWrapEnabled
+        touch $variablesDirectory/bubbleWrapEnabled
     fi
 }
 function firstStartup(){
     # Install required packages.
-    export ROOTHOMEDIR=$HOME
     sudovm="$HOME/.local/share/junest/bin/junest proot --fakeroot"
     $sudovm useradd $USER
     paruj="$sudovm runuser -u $USER -- paru"
@@ -128,22 +133,26 @@ function firstStartup(){
     cd $HOME/tmp
     curl -LO https://github.com/Morganamilo/paru/releases/download/v$PARU_VERSION/paru-v$PARU_VERSION-x86_64.tar.zst
     $HOME/.local/share/junest/bin/junest proot --fakeroot tar -xvf $HOME/tmp/paru-v$PARU_VERSION-x86_64.tar.zst >> $logFile
-    cp paru $HOME/.junest/usr/bin/paru
-    cp paru.conf $HOME/.junest/etc/paru.conf
+    cp paru $variablesDirectory/linuximage/usr/bin/paru
+    cp paru.conf $variablesDirectory/linuximage/etc/paru.conf
 
-    cp man/paru.8 $HOME/.junest/usr/share/man/man8/paru.8
-    cp man/paru.conf.5 $HOME/.junest/usr/share/man/man5/paru.conf.5
+    cp man/paru.8 $variablesDirectory/linuximage/usr/share/man/man8/paru.8
+    cp man/paru.conf.5 $variablesDirectory/linuximage/usr/share/man/man5/paru.conf.5
 
-    cp completions/bash $HOME/.junest/usr/share/bash-completion/completions/paru.bash
-    cp completions/fish $HOME/.junest/usr/share/fish/vendor_completions.d/paru.fish
-    cp completions/zsh $HOME/.junest/usr/share/zsh/site-functions/_paru
+    cp completions/bash $variablesDirectory/linuximage/usr/share/bash-completion/completions/paru.bash
+    cp completions/fish $variablesDirectory/linuximage/usr/share/fish/vendor_completions.d/paru.fish
+    cp completions/zsh $variablesDirectory/linuximage/usr/share/zsh/site-functions/_paru
 
-    # Install backed up packages (if there is) & Gotty
-    $paruj -S --noconfirm gotty-bin $backupPackages $PacmanCustomPackages
+    # Gotty Quick Installation
+    cd /tmp
+    GottyVersion="1.0.1"
+    curl -LO https://github.com/yudai/gotty/releases/download/v{GottyVersion}/gotty_linux_amd64.tar.gz
+    $sudoj tar -xvf gotty_v*
+    $sudoj cp gotty /usr/bin
 
     #Gotty communication
-    echo "for x in $(ls /dev/pts); do if [ \$x != "ptmx" ]; then echo "\$@" >> /dev/pts/\$x; fi; done" >> $HOME/.junest/usr/bin/gottycom
-    chmod a+x+w $HOME/.junest/usr/bin/gottycom
+    echo "for x in $(ls /dev/pts); do if [ \$x != "ptmx" ]; then echo "\$@" >> /dev/pts/\$x; fi; done" >> $variablesDirectory/linuximage/usr/bin/gottycom
+    chmod a+x+w $variablesDirectory/linuximage/usr/bin/gottycom
 }
 function installer(){
     ### Start of installation process
@@ -158,16 +167,12 @@ function installer(){
     bash $HOME/.local/share/junest/bin/junest setup -i junest-x86_64.tar.gz >>$logFile
 
     # Install required packages
-    echo "installation-finished-success" > $HOME/rlavars/installstatus
+    echo "installation-finished-success" > $variablesDirectory/installstatus
     
 }
 function uninstall(){
     cd $HOME
-    rm -rf .local/share/junest &>>$logFile
-    rm -rf .junest &>>$logFile
-    rm -rf rlavars &>>$logFile
-    rm -rf .bashrc &>>$logFile
-    touch .bashrc
+    rm -rf $variablesDirectory
 }
 function reinstall(){
     uninstall
@@ -247,7 +252,8 @@ function backupPackages(){
 case $1 in
     -v|--verbose)
         echo "" > $logFile
-        mkdir $HOME/rlavars
+        mkdir $variablesDirectory
+        mkdir $variablesDirectory/logs
         installer
         patchBugs
         firstStartup
@@ -279,7 +285,7 @@ function startArchLinux(){
 
     # Selecting which configurations to use
     startjunest="$HOME/.local/share/junest/bin/junest proot --fakeroot "
-    if [ -f $HOME/rlavars/bubbleWrapEnabled ]; then
+    if [ -f $variablesDirectory/bubbleWrapEnabled ]; then
         startjunest="$HOME/.local/share/junest/bin/junest ns --fakeroot "
     fi
     $startjunest $run
@@ -288,16 +294,17 @@ function startArchLinux(){
 }
 
 function checkInstaller(){
-    if [ -f $HOME/rlavars/installstatus ]; then
+    if [ -f $variablesDirectory/installstatus ]; then
         clear
         
         startArchLinux
     else
-        mkdir $HOME/rlavars
+    mkdir $variablesDirectory
+    mkdir $variablesDirectory/logs
         silentInstall
     fi
             
 }
-
-echo "" > $logFile
+ROOTHOMEDIR="$variablesDirectory/linuximage"
+export JUNEST_HOME="$variablesDirectory/linuximage"
 checkInstaller

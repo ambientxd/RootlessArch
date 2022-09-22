@@ -73,8 +73,8 @@ unset CDPATH
 
 # Default settings
 fakechroot_lib=libfakechroot.so
-fakechroot_paths=$ROOTHOMEDIR/.junest/usr/lib/libfakeroot/fakechroot
-fakechroot_sysconfdir=$ROOTHOMEDIR/.junest/etc/fakechroot
+fakechroot_paths=$ROOTHOMEDIR/usr/lib/libfakeroot/fakechroot
+fakechroot_sysconfdir=$ROOTHOMEDIR/etc/fakechroot
 fakechroot_confdir=
 fakechroot_environment=
 fakechroot_bindir=
