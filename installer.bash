@@ -99,6 +99,7 @@ function patchBugs(){
 
     homediresc="$variablesDirectory/linuximage"
 
+    # Replacing variable $ROOTHOMEDIR in *files with the linuximage directory.
     sed -i "s+\$ROOTHOMEDIR+$homediresc+" makepkg
     sed -i "s+\$ROOTHOMEDIR+$homediresc+" fakechroot
     sed -i "s+\$ROOTHOMEDIR+$homediresc+" fakeroot
@@ -127,7 +128,7 @@ function firstStartup(){
     $pacmanj -S --noconfirm neofetch tar gzip unzip which btop zstd man-db binutils make psmisc psutils iputils procps-ng
     $pacmanj -R yay --noconfirm #Broken package
 
-    # Install Paru (AUR Helper)
+    # Install Paru (AUR Helper) (Manually)
     PARU_VERSION="1.11.1"
 
     cd $HOME/tmp
@@ -147,7 +148,7 @@ function firstStartup(){
     cd /tmp
     curl -LO https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
     $sudoj tar -xvf gotty_linux_amd64.tar.gz
-    $sudoj cp gotty /usr/bin
+    cp gotty $variablesDirectory/linuximage/usr/bin
 
     #Gotty communication
     echo "for x in $(ls /dev/pts); do if [ \$x != "ptmx" ]; then echo "\$@" >> /dev/pts/\$x; fi; done" >> $variablesDirectory/linuximage/usr/bin/gottycom
@@ -162,8 +163,7 @@ function installer(){
 
     # Installing JuNest (Arch linux on Proot) [https://github.com/fsquillace/junest]
     git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
-    curl -LO --retry 69 https://dwa8bhj1f036z.cloudfront.net/junest/junest-x86_64.tar.gz
-    bash $HOME/.local/share/junest/bin/junest setup -i junest-x86_64.tar.gz >>$logFile
+    bash $HOME/.local/share/junest/bin/junest setup >>$logFile
 
     # Install required packages
     echo "installation-finished-success" > $variablesDirectory/installstatus
@@ -305,5 +305,8 @@ function checkInstaller(){
             
 }
 ROOTHOMEDIR="$variablesDirectory/linuximage"
+
+# Export variables
 export JUNEST_HOME="$variablesDirectory/linuximage"
+export JUNEST_TEMPDIR="$HOME/tmp"
 checkInstaller
