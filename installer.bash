@@ -79,7 +79,7 @@ echo "Options:"
 echo "  $0 {-r    --reinstall}: Reinstall System"
 echo "  $0 {-d --selfdestruct}: Uninstall RootlessArch"
 echo "  $0 {-v      --verbose}: Install System (Verbose Mode)"
-echo "  $0 {-r   --runcommand}: Runs a command (Example: bash $0 --runcommand whoami)"
+echo "  $0 {-r   --run}: Runs a command (Example: bash $0 --run whoami)"
 echo ""
 exit 0
 }
@@ -248,6 +248,43 @@ function backupPackages(){
 
 # Handling Arguments
 
+function startArchLinux(){
+    rm -rf $HOME/tmp/*
+
+    # Selecting which configurations to use
+    startjunest="$HOME/.local/share/junest/bin/junest proot --fakeroot"
+    if [ -f $variablesDirectory/bubbleWrapEnabled ]; then
+        startjunest="$HOME/.local/share/junest/bin/junest ns --fakeroot"
+    fi
+
+    if [ "$(whoami)" == "root" ]; then startjunest="$HOME/.local/share/junest/bin/junest root"; fi
+    $startjunest $run
+    exitCode=$!
+        
+}
+
+function checkInstaller(){
+    if [ -f $variablesDirectory/installstatus ]; then
+        clear
+        
+        echo "Welcome to Arch Linux!"
+        startArchLinux
+    else
+        mkdir $variablesDirectory
+        mkdir $variablesDirectory/logs
+        silentInstall
+        startArchLinux
+    fi
+            
+}
+ROOTHOMEDIR="$variablesDirectory/linuximage"
+
+
+
+# Export variables
+export JUNEST_HOME="$variablesDirectory/linuximage"
+export JUNEST_TEMPDIR="$HOME/tmp"
+
 case $1 in
     -v|--verbose)
         echo "" > $logFile
@@ -273,40 +310,15 @@ case $1 in
         echo "Still in progress, sorry :)"
         exit
         ;;
+    -r|--run)
+        shift
+        run=$@
+        startArchLinux
+        exit
+        ;;
     -*)
         printUsage
         ;;
 esac
 
-function startArchLinux(){
-    rm -rf $HOME/tmp/*
-    echo "Welcome to Arch Linux!"
-
-    # Selecting which configurations to use
-    startjunest="$HOME/.local/share/junest/bin/junest proot --fakeroot "
-    if [ -f $variablesDirectory/bubbleWrapEnabled ]; then
-        startjunest="$HOME/.local/share/junest/bin/junest ns --fakeroot "
-    fi
-    $startjunest $run
-    exitCode=$!
-        
-}
-
-function checkInstaller(){
-    if [ -f $variablesDirectory/installstatus ]; then
-        clear
-        
-        startArchLinux
-    else
-    mkdir $variablesDirectory
-    mkdir $variablesDirectory/logs
-        silentInstall
-    fi
-            
-}
-ROOTHOMEDIR="$variablesDirectory/linuximage"
-
-# Export variables
-export JUNEST_HOME="$variablesDirectory/linuximage"
-export JUNEST_TEMPDIR="$HOME/tmp"
 checkInstaller
