@@ -256,8 +256,8 @@ function startArchLinux(){
     if [ -f $variablesDirectory/bubbleWrapEnabled ]; then
         startjunest="$HOME/.local/share/junest/bin/junest ns --fakeroot"
     fi
-
-    if [ "$(whoami)" == "root" ]; then startjunest="$HOME/.local/share/junest/bin/junest root"; fi # Broken!
+    
+    if [ whoami == "root" ]; then startjunest="$HOME/.local/share/junest/bin/junest root"; fi # Broken
     $startjunest $run
     exitCode=$!
         
@@ -273,6 +273,9 @@ function checkInstaller(){
         mkdir $variablesDirectory
         mkdir $variablesDirectory/logs
         silentInstall
+
+        clear
+        echo "Welcome to Arch Linux!"
         startArchLinux
     fi
             
