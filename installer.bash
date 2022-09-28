@@ -257,7 +257,7 @@ function startArchLinux(){
         startjunest="$HOME/.local/share/junest/bin/junest ns --fakeroot"
     fi
 
-    if [ "$(whoami)" == "root" ]; then startjunest="$HOME/.local/share/junest/bin/junest root"; fi
+    if [ "$(whoami)" == "root" ]; then startjunest="$HOME/.local/share/junest/bin/junest root"; fi # Broken!
     $startjunest $run
     exitCode=$!
         
