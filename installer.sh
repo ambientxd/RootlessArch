@@ -155,7 +155,10 @@ function firstStartup(){
     cp gotty $variablesDirectory/linuximage/usr/bin
 
     #Gotty communication
-    echo "for x in $(ls /dev/pts); do if [ \$x != "ptmx" ]; then echo "\$@" >> /dev/pts/\$x; fi; done" >> $variablesDirectory/linuximage/usr/bin/gottycom
+    echo "#!/bin/bash" >> $variablesDirectory/linuximage/usr/bin/gottycom
+    echo 'for x in $(ls /dev/pts); do' >> $variablesDirectory/linuximage/usr/bin/gottycom
+    echo '  echo "$@" >> /dev/pts/$x' >> $variablesDirectory/linuximage/usr/bin/gottycom
+    echo 'done' >> $variablesDirectory/linuximage/usr/bin/gottycom
     chmod a+x+w $variablesDirectory/linuximage/usr/bin/gottycom
 }
 function installer(){
@@ -188,29 +191,27 @@ function reinstall(){
 # SilentInstall
 function silentInstall(){
 clear
-echo -e "
-\033[38;2;23;147;209m        
-                   ▄
-                  ▟█▙
-                 ▟███▙
-                ▟█████▙
-               ▟███████▙
-              ▂▔▀▜██████▙
-             ▟██▅▂▝▜█████▙
-            ▟█████████████▙
-           ▟███████████████▙
-          ▟█████████████████▙
-         ▟███████████████████▙
-        ▟█████████▛▀▀▜████████▙
-       ▟████████▛      ▜███████▙
-      ▟█████████        ████████▙
-     ▟██████████        █████▆▅▄▃▂
-    ▟██████████▛        ▜█████████▙
-   ▟██████▀▀▀              ▀▀██████▙
-  ▟███▀▘                       ▝▀███▙
- ▟▛▀                               ▀▜▙
-         RootlessArch Installer
-"
+echo -e "\033[38;2;23;147;209m"  
+echo                   ▄
+echo                  ▟█▙
+echo                 ▟███▙
+echo                ▟█████▙
+echo               ▟███████▙
+echo              ▂▔▀▜██████▙
+echo             ▟██▅▂▝▜█████▙
+echo            ▟█████████████▙
+echo           ▟███████████████▙
+echo          ▟█████████████████▙
+echo         ▟███████████████████▙
+echo        ▟█████████▛▀▀▜████████▙
+echo       ▟████████▛      ▜███████▙
+echo      ▟█████████        ████████▙
+echo     ▟██████████        █████▆▅▄▃▂
+echo    ▟██████████▛        ▜█████████▙
+echo   ▟██████▀▀▀              ▀▀██████▙
+echo  ▟███▀▘                       ▝▀███▙
+echo ▟▛▀                               ▀▜▙
+echo         RootlessArch Installer
 
 
 echo -e "\e[32mWhile we're doing the hard work for you, you can have a break until the installation process finishes.\033[38;2;23;147;209m"
