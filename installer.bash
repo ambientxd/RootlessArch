@@ -117,6 +117,10 @@ function patchBugs(){
     if [ "$bubblewrapTest" == "root" ]; then
         touch $variablesDirectory/bubbleWrapEnabled
     fi
+
+    # Global BashRC editing
+    echo "export PS1='[\e[32m\$(whoami)\e[0m@\e[94mRootlessArch \e[35m\$(pwd)\e[0m]\$ '" >> $variablesDirectory/linuximage/etc/bash.bashrc
+    echo "alias ls='ls --color=always'" >> $variablesDirectory/linuximage/etc/bash.bashrc
 }
 function firstStartup(){
     # Install required packages.
