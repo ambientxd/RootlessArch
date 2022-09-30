@@ -4,4 +4,4 @@
 InstallerFile="%INSTALLERFILE%"
 
 # Running installer.sh
-bash $InstallerFile --run "%COMMAND% $@"
+bash $InstallerFile --run "%COMMAND%" $@
