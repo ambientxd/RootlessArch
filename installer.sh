@@ -289,17 +289,19 @@ function checkInstaller(){
 
 # Wrappers creation
 createWrappers(){
+    echo "Downloading wrapper script..."
     curl -L https://raw.githubusercontent.com/ambientxd/RootlessArch/main/binwrappers/wrapper.sh -o /tmp/wrapper.sh
 
     # Getting files in WrappersDir
     for file in $(ls $variablesDirectory/linuximage/usr/bin); do
         cp /tmp/wrapper.sh $wrapperTo/$file
         sed -i "s+%COMMAND%+$file+" $wrapperTo/$file
-        sed -i "s+%INSTALLERFILE%+$0+" $wrapperTo/$file
+        sed -i "s+%INSTALLERFILE%+$(pwd)$(basename $0)+" $wrapperTo/$file
         chmod a+x $wrapperTo/$file
-        echo "Created $wrapperTo/$file (from $variablesDirectory/linuximage/usr/bin/$file)"
+        echo -ne "\r\033[KCreated $wrapperTo/$file (from $variablesDirectory/linuximage/usr/bin/$file)"
     done
 
+    echo 
     echo "Wrappers creation completed."
 }
 ROOTHOMEDIR="$variablesDirectory/linuximage"
@@ -347,7 +349,7 @@ case $1 in
             wrapperTo=$3
             mkdir -p $wrapperTo
         else
-            wrapperTo=~/.local/bin
+            wrapperTo=$variablesDirectory/bin
             mkdir -p $wrapperTo
         fi
         echo $wrapperTo
