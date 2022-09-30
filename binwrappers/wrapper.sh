@@ -4,4 +4,4 @@
 InstallerFile="%INSTALLERFILE%"
 
 # Running installer.sh
-$(basename $InstallerFile) --run "%COMMAND% $@"
+$InstallerFile --run "%COMMAND% $@"
