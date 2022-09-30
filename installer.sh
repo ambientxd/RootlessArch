@@ -309,7 +309,7 @@ createWrappers(){
     echo -e "\033[38;2;23;147;209m"  
     echo Wrappers has been created"!"
     echo
-    echo to use these wrappers, type the command below:
+    echo To use these wrappers, type the command below:
     echo -e "\033[96mexport PATH=\"$wrapperTo:\$PATH\""  
     echo -ne "\033[0m"
 }
