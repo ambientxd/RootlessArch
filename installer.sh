@@ -310,7 +310,7 @@ createWrappers(){
     echo Wrappers have been created"!"
     echo
     echo To use these wrappers, type go to this directory:
-    echo -e "cd $wrapperTo"  
+    echo -e "\033[31mcd $wrapperTo"  
     echo -ne "\033[0m"
 }
 ROOTHOMEDIR="$variablesDirectory/linuximage"
