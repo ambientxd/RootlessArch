@@ -80,7 +80,7 @@ echo "  $0 {-r    --reinstall}: Reinstall System"
 echo "  $0 {-d --selfdestruct}: Uninstall RootlessArch"
 echo "  $0 {-v      --verbose}: Install System (Verbose Mode)"
 echo "  $0 {-r   --run}: Runs a command (Example: bash $0 --run whoami)"
-echo "  $0 {---create-wrappers   -cw (--wrappers-dir <dir>)}: Creates wrappers for uses outside of RootlessArch (defaults to ~/.local/bin)"
+echo "  $0 {---create-wrappers | -cw (--to <DIR> --as <USER>)}: Creates wrappers for uses outside of RootlessArch (defaults to ~/.local/bin)"
 echo ""
 exit 0
 }
@@ -292,6 +292,10 @@ createWrappers(){
     echo "Downloading wrapper script..."
     curl -L https://raw.githubusercontent.com/ambientxd/RootlessArch/main/binwrappers/wrapper.sh -o /tmp/wrapper.sh
 
+    echo "Copying files..."
+    cp "$(pwd)/$(basename $0)" $variablesDirectory/wrapinstaller.sh # Make a installer.sh backup in case of movement or deletion.
+
+
     # Getting files in WrappersDir
     filecws=$(ls $variablesDirectory/linuximage/usr/bin | wc -l)
     filecw=0
@@ -299,7 +303,7 @@ createWrappers(){
     for file in $(ls $variablesDirectory/linuximage/usr/bin); do
         cp /tmp/wrapper.sh $wrapperTo/$file
         sed -i "s+%COMMAND%+$file+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
-        sed -i "s+%INSTALLERFILE%+$(pwd)/$(basename $0)+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
+        sed -i "s+%INSTALLERFILE%+$variablesDirectory/wrapinstaller.sh+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
         chmod a+x $wrapperTo/$file
         echo -ne "\r\033[K($(printf %.2f%% "$((10**3 * 100 * $filecw/$filecws))e-3")) Created $wrapperTo/$file" 
         filecw=$(($filecw+1))
@@ -354,14 +358,29 @@ case $1 in
         ;;
     --create-wrappers|-cw)
         # Wrappers Configuration
-        if [ "$2" == "--wrapper-dir" ]; then
-            wrapperTo=$3
-            mkdir -p $wrapperTo
-        else
-            wrapperTo=$variablesDirectory/bin
-            mkdir -p $wrapperTo
-        fi
-        echo Creating wrappers to $wrapperTo
+        wrapperTo=$variablesDirectory/bin
+        wrapAs=root
+        shift
+        
+        # Arguments handler
+        for i in $@; do
+            case $1 in
+                --to)
+                    wrapperTo=$2
+                    shift
+                    shift
+                    ;;
+                
+                --as)
+                    wrapAs=$2
+                    shift
+                    shift
+                    ;;
+            esac
+        done
+
+        mkdir -p $wrapperTo
+        echo "Creating wrappers to $wrapperTo (Wrapping as $wrapAs)"
 
         if [ ! -d "$wrapperTo" ]; then
             echo "WrapperDir doesn't exist."
