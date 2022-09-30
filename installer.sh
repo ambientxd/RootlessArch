@@ -80,6 +80,7 @@ echo "  $0 {-r    --reinstall}: Reinstall System"
 echo "  $0 {-d --selfdestruct}: Uninstall RootlessArch"
 echo "  $0 {-v      --verbose}: Install System (Verbose Mode)"
 echo "  $0 {-r   --run}: Runs a command (Example: bash $0 --run whoami)"
+echo "  $0 {---create-wrappers   -cw (--wrappers-dir <dir>)}: Creates wrappers for uses outside of RootlessArch (defaults to ~/.local/bin)"
 echo ""
 exit 0
 }
@@ -285,6 +286,22 @@ function checkInstaller(){
     fi
             
 }
+
+# Wrappers creation
+createWrappers(){
+    curl -L https://raw.githubusercontent.com/ambientxd/RootlessArch/main/binwrappers/wrapper.sh -o /tmp/wrapper.sh
+
+    # Getting files in WrappersDir
+    for file in $(ls $variablesDirectory/linuximage/usr/bin); do
+        cp /tmp/wrapper.sh $wrapperTo/$file
+        sed -i "s+%COMMAND%+$file+" $wrapperTo/$file
+        sed -i "s+%INSTALLERFILE%+$0+" $wrapperTo/$file
+        chmod a+x $wrapperTo/$file
+        echo "Created $wrapperTo/$file (from $variablesDirectory/linuximage/usr/bin/$file)"
+    done
+
+    echo "Wrappers creation completed."
+}
 ROOTHOMEDIR="$variablesDirectory/linuximage"
 
 
@@ -324,6 +341,26 @@ case $1 in
         startArchLinux
         exit
         ;;
+    --create-wrappers|-cw)
+        # Wrappers Configuration
+        if [ "$2" == "--wrapper-dir" ]; then
+            wrapperTo=$3
+            mkdir -p $wrapperTo
+        else
+            wrapperTo=~/.local/bin
+            mkdir -p $wrapperTo
+        fi
+        echo $wrapperTo
+
+        if [ ! -d "$wrapperTo" ]; then
+            echo "WrapperDir doesn't exist."
+            exit
+        fi
+
+        createWrappers
+        exit
+        ;;
+
     -*)
         printUsage
         ;;
