@@ -193,41 +193,38 @@ function reinstall(){
 function silentInstall(){
 clear
 echo -e "\033[38;2;23;147;209m"  
-echo                   ▄
-echo                  ▟█▙
-echo                 ▟███▙
-echo                ▟█████▙
-echo               ▟███████▙
-echo              ▂▔▀▜██████▙
-echo             ▟██▅▂▝▜█████▙
-echo            ▟█████████████▙
-echo           ▟███████████████▙
-echo          ▟█████████████████▙
-echo         ▟███████████████████▙
-echo        ▟█████████▛▀▀▜████████▙
-echo       ▟████████▛      ▜███████▙
-echo      ▟█████████        ████████▙
-echo     ▟██████████        █████▆▅▄▃▂
-echo    ▟██████████▛        ▜█████████▙
-echo   ▟██████▀▀▀              ▀▀██████▙
-echo  ▟███▀▘                       ▝▀███▙
-echo ▟▛▀                               ▀▜▙
-echo         RootlessArch Installer
-
-
-echo -e "\e[32mWhile we're doing the hard work for you, you can have a break until the installation process finishes.\033[38;2;23;147;209m"
+echo "                   ▄"
+echo "                  ▟█▙"
+echo "                 ▟███▙"
+echo "                ▟█████▙"
+echo "               ▟███████▙"
+echo "              ▂▔▀▜██████▙"
+echo "             ▟██▅▂▝▜█████▙"
+echo "            ▟█████████████▙"
+echo "           ▟███████████████▙"
+echo "          ▟█████████████████▙"
+echo "         ▟███████████████████▙"
+echo "        ▟█████████▛▀▀▜████████▙"
+echo "       ▟████████▛      ▜███████▙"
+echo "      ▟█████████        ████████▙"
+echo "     ▟██████████        █████▆▅▄▃▂"
+echo "    ▟██████████▛        ▜█████████▙"
+echo "   ▟██████▀▀▀              ▀▀██████▙"
+echo "  ▟███▀▘                       ▝▀███▙"
+echo " ▟▛▀                               ▀▜▙"
+echo -e "\e[32m      RootlessArch is installing...\033[38;2;23;147;209m"
 
 installer 2>>$logFile & PID=$! >>$logFile
 # While process is running...
 i=1
 sp="|/-\\"
 echo ""
-echo -n "Installing System...  "
+echo -n "Downloading System...  "
 while kill -0 $PID 2>> $logFile; do 
     printf "\b${sp:i++%${#sp}:1}"
     sleep 0.5
 done
-printf "\b Finished\n"
+printf "\b\033[96m [Finished]\n\033[38;2;23;147;209m"
 
 patchBugs 2>>$logFile & PID=$! >>$logFile
 echo -n "Patching bugs...  "
@@ -235,15 +232,17 @@ while kill -0 $PID 2>> $logFile; do
     printf "\b${sp:i++%${#sp}:1}"
     sleep 0.5
 done
-printf "\b Finished\n"
+printf "\b\033[96m [Finished]\n\033[38;2;23;147;209m"
 
 firstStartup 2>>$logFile & PID=$! >>$logFile
 echo -ne "Installing essential system packages...  \e[0m"
+sleep 1
+clear
 while kill -0 $PID 2>> $logFile; do 
     sleep 0.5
 done
-printf "\033[38;2;23;147;209m\b Finished\n"
-echo -n "Installation finished! Rerun the script to start Arch Linux!"
+printf "\b\033[96m [Finished]\n\033[38;2;23;147;209m"
+echo -n "\n\nInstallation finished! Rerun the script to start Arch Linux!\033[0m"
 }
 
 ### System update
