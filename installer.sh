@@ -307,10 +307,10 @@ createWrappers(){
     echo -ne "\r\033[K(100%) Wrappers creation completed."
 
     echo -e "\033[34m"  
-    echo Wrappers has been created"!"
+    echo Wrappers have been created"!"
     echo
-    echo To use these wrappers, type the command below:
-    echo -e "\033[31mexport PATH=\"$wrapperTo:\$PATH\""  
+    echo To use these wrappers, type go to this directory:
+    echo -e "cd $wrapperTo"  
     echo -ne "\033[0m"
 }
 ROOTHOMEDIR="$variablesDirectory/linuximage"
