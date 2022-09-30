@@ -293,16 +293,18 @@ createWrappers(){
     curl -L https://raw.githubusercontent.com/ambientxd/RootlessArch/main/binwrappers/wrapper.sh -o /tmp/wrapper.sh
 
     # Getting files in WrappersDir
+    filecws=$(ls $variablesDirectory/linuximage/usr/bin | wc -l)
+    filecw=0
+
     for file in $(ls $variablesDirectory/linuximage/usr/bin); do
         cp /tmp/wrapper.sh $wrapperTo/$file
-        sed -i "s+%COMMAND%+$file+" $wrapperTo/$file
-        sed -i "s+%INSTALLERFILE%+$(pwd)$(basename $0)+" $wrapperTo/$file
+        sed -i "s+%COMMAND%+$file+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
+        sed -i "s+%INSTALLERFILE%+$(pwd)/$(basename $0)+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
         chmod a+x $wrapperTo/$file
-        echo -ne "\r\033[KCreated $wrapperTo/$file (from $variablesDirectory/linuximage/usr/bin/$file)"
+        echo -ne "\r\033[K($(printf %.2f%% "$((10**3 * 100 * $filecw/$filecws))e-3")) Created $wrapperTo/$file" 
+        filecw=$(($filecw+1))
     done
-
-    echo 
-    echo "Wrappers creation completed."
+    echo -ne "\r\033[K(100%) Wrappers creation completed."
 }
 ROOTHOMEDIR="$variablesDirectory/linuximage"
 
@@ -352,7 +354,7 @@ case $1 in
             wrapperTo=$variablesDirectory/bin
             mkdir -p $wrapperTo
         fi
-        echo $wrapperTo
+        echo Creating wrappers to $wrapperTo
 
         if [ ! -d "$wrapperTo" ]; then
             echo "WrapperDir doesn't exist."
