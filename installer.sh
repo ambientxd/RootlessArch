@@ -11,7 +11,7 @@
 # Configuration for custom usage.
 variablesDirectory="$HOME/.rla"
 PacmanCustomPackages="" # Those packages gets pre-installed in the installation process.
-filePath="$(pwd)/$0" # Installer's file path
+filePath="$(pwd)/$(basename $0)" # Installer's file path
 shellConfig="$HOME/.bashrc"
 logFile="$variablesDirectory/logs/installer$RANDOM$RANDOM.log"
 
@@ -19,8 +19,19 @@ logFile="$variablesDirectory/logs/installer$RANDOM$RANDOM.log"
 # Random essential variables
 #backupPackages=""
 
+if [ ! -f "$filePath" ]; then
+    filePath=$0 # This was ran either by $PATH, or full.
+fi
 
+# Checks
+checkIfInstalled(){
+    isInstalled=false
+    if [ -d "$variablesDirectory/linuximage/usr/bin" ]; then
+        isInstalled=true
+    fi
+}
 
+checkIfInstalled
 # Startup settings
 runGottyOnStartup=false # Replaces variable $run.
 run="su $USER" # The command to run when started
@@ -151,7 +162,7 @@ function firstStartup(){
 
     # Gotty Quick Installation
     cd /tmp
-    curl -LO https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz
+    curl -LO https://github.com/sorenisanerd/gotty/releases/download/v1.5.0/gotty_v1.5.0_linux_amd64.tar.gz
     $sudoj tar -xvf gotty_linux_amd64.tar.gz
     cp gotty $variablesDirectory/linuximage/usr/bin
 
@@ -172,9 +183,6 @@ function installer(){
     # Installing JuNest (Arch linux on Proot) [https://github.com/fsquillace/junest]
     git clone https://github.com/fsquillace/junest.git ~/.local/share/junest
     bash $HOME/.local/share/junest/bin/junest setup >>$logFile
-
-    # Install required packages
-    echo "installation-finished-success" > $variablesDirectory/installstatus
     
 }
 function uninstall(){
@@ -269,7 +277,7 @@ function startArchLinux(){
 }
 
 function checkInstaller(){
-    if [ -f $variablesDirectory/installstatus ]; then
+    if [ $isInstalled == "true" ]; then
         clear
         
         echo "Welcome to Arch Linux!"
@@ -292,17 +300,22 @@ createWrappers(){
     curl -L https://raw.githubusercontent.com/ambientxd/RootlessArch/main/binwrappers/wrapper.sh -o /tmp/wrapper.sh
 
     echo "Copying files..."
-    cp "$(pwd)/$(basename $0)" $variablesDirectory/wrapinstaller.sh # Make a installer.sh backup in case of movement or deletion.
+    cp "$filePath" $variablesDirectory/wrapinstaller.sh # Make a installer.sh backup in case of movement or deletion.
 
-
+    # Checking if user exists
+    echo "Checking if user $wrapAs exist..."
+    if [ "$(bash $0 --run runuser -u $wrapAs -- whoami)" != "$wrapAs" ]; then
+        echo "User does not exist."
+        exit
+    fi
     # Getting files in WrappersDir
     filecws=$(ls $variablesDirectory/linuximage/usr/bin | wc -l)
     filecw=0
 
     for file in $(ls $variablesDirectory/linuximage/usr/bin); do
         cp /tmp/wrapper.sh $wrapperTo/$file
-        sed -i "s+%COMMAND%+$file+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
-        sed -i "s+%INSTALLERFILE%+$variablesDirectory/wrapinstaller.sh+" $wrapperTo/$file 2>$variablesDirectory/logs/wrapperCreation$RANDOM$RANDOM$RANDOM$RANDOM.log
+        sed -i "s+%COMMAND%+runuser -u ${wrapAs} -- $file+" $wrapperTo/$file 2>/dev/null
+        sed -i "s+%INSTALLERFILE%+$variablesDirectory/wrapinstaller.sh+" $wrapperTo/$file 2>/dev/null
         chmod a+x $wrapperTo/$file
         echo -ne "\r\033[K($(printf %.2f%% "$((10**3 * 100 * $filecw/$filecws))e-3")) Created $wrapperTo/$file" 
         filecw=$(($filecw+1))
